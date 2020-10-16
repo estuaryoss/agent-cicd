@@ -1,0 +1,47 @@
+dist: xenial
+language: python
+python: 3.6
+script: skip
+
+env:
+  NGROK_TOKEN: 1RER6BUC3QNNwYWY5LcIBjrv3A8_24QccmopTEQJGMErG9uzw
+
+jobs:
+  include:
+    - stage: test
+    - language: python
+      python: 3.6
+      services:
+        - docker
+      env:
+        SCRIPTS_DIR: tests
+        ISOLATED: true
+      script:
+        #run cli tests
+        - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_TOKEN"
+        - docker run -d -e HTTP_AUTH_TOKEN=None -p 8080:8080 dinutac/estuary-agent:latest
+        - sleep 5
+        - chmod +x main.py
+        - python3 -m unittest discover tests "test_cli.py"
+
+    - stage: deploy
+      services: docker
+      before_deploy:
+        - pip3 install -r requirements.txt
+        - pyinstaller --onefile main.py
+        - ls -lrt dist
+        - cp dist/main main-linux
+        - ls -lrt
+        - rm -rf dist
+        - rm -rf build
+      deploy:
+        - provider: releases
+          api_key: $GITHUB_TOKEN
+          file:
+            - "main-linux"
+          skip_cleanup: true
+          on:
+            tags: true
+
+
+
