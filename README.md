@@ -9,10 +9,10 @@ Estuary CI/CD CLI will run your CI/CD flow and stream back the events real-time 
 [![Maintainability](https://api.codeclimate.com/v1/badges/315fdb698ad782505c96/maintainability)](https://codeclimate.com/repos/5f8b3da35a75ce3a01000c4c/maintainability)
 
 ## Linux status
-[![Build Status](https://travis-ci.org/estuaryoss/estuary-cicd.svg?branch=master)](https://travis-ci.org/estuaryoss/estuary-cicd)
+[![Build Status](https://travis-ci.com/estuaryoss/estuary-cicd.svg?token=UC9Z5nQSPmb5vK5QLpJh&branch=main)](https://travis-ci.com/estuaryoss/estuary-cicd)
 
 ## Win status
-[![CircleCI](https://circleci.com/gh/estuaryoss/estuary-cicd.svg?style=svg)](https://circleci.com/gh/estuaryoss/estuary-cicd)
+[![CircleCI](https://circleci.com/gh/estuaryoss/estuary-cicd.svg?style=svg&circle-token=cd4dd66d5683d534ca44f5a64a644720149d8578)](https://circleci.com/gh/estuaryoss/estuary-cicd)
 
 ## Steps
 -  deploy [estuary-agent](https://github.com/dinuta/estuary-agent) or [estuary-agent-java](https://github.com/dinuta/estuary-agent-java)  on the target machine (metal/VM/Docker/IoT device)
@@ -21,10 +21,10 @@ Estuary CI/CD CLI will run your CI/CD flow and stream back the events real-time 
 
 ## Usage
 ```bash
-python .\main.py --ip=192.168.0.10 --port=8080 --token=None --file="config.yaml"
+python .\main.py --ip=192.168.0.10 --port=8080 --token=None --file="config.yaml" --interval=5
 ```
 
-The default endpoint is */commanddetachedyaml*. The endpoint can be overridden (E.g. Estuary deployer):
+The default endpoint is */commanddetachedyaml*. The endpoint can be overridden:
 ```bash
 python .\main.py --ip=192.168.0.10 --port=8080 --token=None --endpoint=/docker/command --file="config.yaml"
 ```
@@ -48,6 +48,7 @@ Options:
   --endpoint TEXT  The endpoint to sent the request. Default is
                    "/commanddetachedyaml"
   --file TEXT      The yaml file path on disk. Default is "./config.yaml"
+  --interval TEXT  The poll interval in seconds. Default is 5.
   --help           Show this message and exit.
 
 ```
