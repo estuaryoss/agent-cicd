@@ -5,6 +5,21 @@ class RestApiService:
     def __init__(self, connection):
         self.conn = connection
 
+    def ping(self):
+        endpoint = "/ping"
+        url_format = f"{self.conn.get('protocol')}://{self.conn.get('ip')}:{self.conn.get('port')}{endpoint}"
+        headers = {
+            "Token": self.conn.get('token'),
+            "Content-Type": "text/plain"
+        }
+
+        response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'))
+
+        if response.status_code != 200:
+            return "Error: Http code: {}. Http body: {}".format(response.status_code, response.text)
+
+        return response.json().get('description')
+
     def post(self, content):
         content = content.strip()
         url_format = f"{self.conn.get('protocol')}://{self.conn.get('ip')}:{self.conn.get('port')}{self.conn.get('endpoint')}"
@@ -15,7 +30,7 @@ class RestApiService:
 
         response = requests.post(url_format, headers=headers, data=content, timeout=5, verify=self.conn.get('cert'))
 
-        # error, server sent non 200 OK response code
+        # error, server sent non 200 OK description code
         if response.status_code != 200:
             return "Error: Http code: {}. Http body: {}".format(response.status_code, response.text)
 
@@ -36,7 +51,7 @@ class RestApiService:
 
         response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'))
 
-        # error, server sent non 200 OK response code
+        # error, server sent non 200 OK description code
         if response.status_code != 200:
             return "Error: Http code: {}. Http body: {}".format(response.status_code, response.text)
 
@@ -46,4 +61,4 @@ class RestApiService:
         if isinstance(body['description'], str):
             raise body.get('description')
 
-        return body.get('description').get('commands')
+        return body.get('description')

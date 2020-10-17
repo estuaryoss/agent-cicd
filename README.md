@@ -6,14 +6,13 @@ Support project: <a href="https://paypal.me/catalindinuta?locale.x=en_US"><img s
 Estuary CI/CD CLI will run your CI/CD flow and stream back the events real-time as they happen.
 
 ## Code quality
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/086f5a66ac0841c4800dcddfdc9fb3c2)](https://www.codacy.com/gh/estuaryoss/estuary-cli?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=estuaryoss/estuary-cli&amp;utm_campaign=Badge_Grade)
-[![Maintainability](https://api.codeclimate.com/v1/badges/8fffe56fb66038d7fa2d/maintainability)](https://codeclimate.com/github/estuaryoss/estuary-cli/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/315fdb698ad782505c96/maintainability)](https://codeclimate.com/repos/5f8b3da35a75ce3a01000c4c/maintainability)
 
 ## Linux status
-[![Build Status](https://travis-ci.org/estuaryoss/estuary-cli.svg?branch=master)](https://travis-ci.org/estuaryoss/estuary-cli)
+[![Build Status](https://travis-ci.org/estuaryoss/estuary-cicd.svg?branch=master)](https://travis-ci.org/estuaryoss/estuary-cicd)
 
 ## Win status
-[![CircleCI](https://circleci.com/gh/estuaryoss/estuary-cli.svg?style=svg)](https://circleci.com/gh/estuaryoss/estuary-cli)
+[![CircleCI](https://circleci.com/gh/estuaryoss/estuary-cicd.svg?style=svg)](https://circleci.com/gh/estuaryoss/estuary-cicd)
 
 ## Steps
 -  deploy [estuary-agent](https://github.com/dinuta/estuary-agent) or [estuary-agent-java](https://github.com/dinuta/estuary-agent-java)  on the target machine (metal/VM/Docker/IoT device)
@@ -22,26 +21,12 @@ Estuary CI/CD CLI will run your CI/CD flow and stream back the events real-time 
 
 ## Usage
 ```bash
-python .\main.py --ip=192.168.0.10 --port=8080 --token=None --cmds="dir;;-trump"
-python .\main.py --ip=192.168.0.10 --port=8080 --token=None --cmds="dir;;cat requirements.txt;;-trump"
+python .\main.py --ip=192.168.0.10 --port=8080 --token=None --file="config.yaml"
 ```
 
-The default endpoint is */command*. The endpoint can be overridden (E.g. Estuary deployer):
+The default endpoint is */commanddetachedyaml*. The endpoint can be overridden (E.g. Estuary deployer):
 ```bash
-python .\main.py --ip=192.168.0.10 --port=8080 --token=None --endpoint=/docker/command --cmds="dir;;cat requirements.txt;;-trump"
-python .\main.py --ip=localhost --port=8080 --token=None --protocol=https --cmds="dir;;-get --args README.md;altcva.md;;-quit"
-python .\main.py --ip=192.168.0.10 --port=8080 --token=None --endpoint=/kubectl/command --cmds="dir;;cat requirements.txt;;-trump"
-```
-
-## File download and upload
-CLI supports file upload and download similar to sftp transfers.
-
-*-put --args LOCAL_PATH;REMOTE_PATH*
-*-get --args REMOTE_PATH;LOCAL_PATH*
-
-```bash
--put --args C:\Users\Dinuta\Downloads\669564.pdf;/tmp/remote/669564.pdf
--get --args /tmp/remote/669564.pdf;C:\Users\Dinuta\Downloads\669564.pdf
+python .\main.py --ip=192.168.0.10 --port=8080 --token=None --endpoint=/docker/command --file="config.yaml"
 ```
 
 ## Params
@@ -60,24 +45,14 @@ Options:
                    Default is http. E.g. https
   --cert TEXT      The certificate with which the estuary-agent was deployed.
                    E.g. https/cert.pem
-  --endpoint TEXT  The endpoint to sent the request. Default is "/command"
-  --cmds TEXT      The commands to be sent separated by ";". Useful for non-
-                   interactive mode.
+  --endpoint TEXT  The endpoint to sent the request. Default is
+                   "/commanddetachedyaml"
+  --file TEXT      The yaml file path on disk. Default is "./config.yaml"
   --help           Show this message and exit.
 
 ```
 
-## Stateless cli example  
-![image](https://user-images.githubusercontent.com/43060213/79952987-e1142f00-8483-11ea-8fdc-8bef2b7f8d2a.png)  
-
 ## Use cases
--  Remote IoT device control
--  Remote machine control
--  Remote software settings
--  Remote debugging
-
-## Exit cli
-ctrl + c  
--quit  
--trump  
+-  app download and installation
+-  CI/CD flows
   

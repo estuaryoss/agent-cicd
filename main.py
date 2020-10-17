@@ -5,6 +5,7 @@ import click
 
 __author__ = "Catalin Dinuta"
 
+from about import properties
 from runners.config_sender import ConfigSender
 from runners.status_checker import StatusChecker
 from service.restapi_service import RestApiService
@@ -21,9 +22,10 @@ from utils.io_utils import IOUtils
                    'Use \'None\' if estuary-agent is deployed unsecured')
 @click.option('--protocol', help='The protocol with which the estuary-agent was deployed. Default is http. E.g. https')
 @click.option('--cert', help='The certificate with which the estuary-agent was deployed. E.g. https/cert.pem')
-@click.option('--endpoint', help='The endpoint to sent the request. Default is "/commanddetached"')
+@click.option('--endpoint', help='The endpoint to sent the request. Default is "/commanddetachedyaml"')
 @click.option('--file', help='The yaml file path on disk. Default is "./config.yaml"')
 def cli(ip, port, token, protocol, cert, endpoint, file):
+    print(f"CLI version: {properties.get('version')}\n")
     cmds_id = token_hex(8)
     connection = {
         "ip": ip,
@@ -31,30 +33,32 @@ def cli(ip, port, token, protocol, cert, endpoint, file):
         "token": token,
         "protocol": protocol if protocol is not None else "http",
         "cert": cert if cert is not None else "https/cert.pem",
-        "endpoint": endpoint if endpoint is not None else f"/commanddetached/{cmds_id}"
+        "endpoint": endpoint if endpoint is not None else f"/commanddetachedyaml/{cmds_id}"
     }
     service = RestApiService(connection)
-    file_path = file if not None else "./config.yaml"
+    file_path = file if file is not None else "config.yaml"
 
     try:
         file_content = IOUtils.read_file(file_path)
     except Exception as e:
-        print("\nFile does not exist ({})".format(e.__str__()))
+        print("File does not exist ({})\n".format(e.__str__()))
         exit(1)
 
     # check if can connect
     try:
-        service.send("ls")
+        service.ping()
     except Exception as e:
-        print("\nCould not connect to the agent ({})".format(e.__str__()))
+        print("Could not connect to the agent ({})\n".format(e.__str__()))
         exit(1)
 
-    print(f"\nRunning commands from file '{file_path}'. Waiting for hash confirmation ...\n")
+    print(f"Running commands from file '{file_path}'. Waiting for hash confirmation ...\n")
     ConfigSender.send_config(service=service, file_content=file_content)
 
     status_checker = StatusChecker(service)
-    status_checker.check_progress(poll_interval=5)
-    exit(0)
+    exit_code = status_checker.check_progress(poll_interval=5)
+
+    print(f"Global exit code: {exit_code}\n")
+    exit(exit_code)
 
 
 if __name__ == "__main__":
