@@ -1,0 +1,9 @@
+env:
+  ISOLATED: "true"
+  MINE: "YOURS"
+before_script:
+  - cat /etc/os-release
+script:
+  - apk add curl
+after_script:
+  - ls -lart

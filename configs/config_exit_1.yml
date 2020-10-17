@@ -6,4 +6,4 @@ before_script:
 script:
   - echo script
 after_script:
-  - echo after_script
+  - bla bla bla bla
