@@ -12,6 +12,7 @@ class StatusChecker:
     def check_progress(self, poll_interval):
         while True:
             self.__poll_and_save()
+            self.__check_if_scheduled()
             self.__mark_and_print_if_finished()
             if self.__check_finished():
                 return self.__get_global_status()
@@ -46,3 +47,8 @@ class StatusChecker:
             if self.cmds_finished.get(cmd) != 0:
                 return 1
         return 0
+
+    def __check_if_scheduled(self):
+        if len(self.description.get('commands')) == 0:
+            raise Exception("Exception: ({})".format("Error in the agent. The commands are not scheduled. "
+                                                     "Check if you have 'start.py' in the path\n"))

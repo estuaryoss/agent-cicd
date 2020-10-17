@@ -17,10 +17,10 @@ jobs:
           command: pyinstaller --onefile main.py
           name: "generate cli exe with pyinstaller"
       - run:
-          command: $ProgressPreference = "SilentlyContinue"; wget https://27-295994997-gh.circle-artifacts.com/0/main-win.exe -o main-win.exe
+          command: $ProgressPreference = "SilentlyContinue"; wget https://estuary-agent.s3.eu-central-1.amazonaws.com/4.1.0/main-win.exe -o main-win.exe
           name: "download estuary-agent"
       - run:
-          command: $ProgressPreference = "SilentlyContinue"; wget https://27-295994997-gh.circle-artifacts.com/0/start.py-win -o start.py
+          command: $ProgressPreference = "SilentlyContinue"; wget https://estuary-agent.s3.eu-central-1.amazonaws.com/4.1.0/start.py-win -o start.py
           name: "download start.py"
       - run:
           command: Start-Process .\main-win.exe

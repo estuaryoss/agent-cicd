@@ -5,9 +5,10 @@ class ConfigSender:
 
     @staticmethod
     def send_config(service, file_content):
-        try:
-            response = service.post(file_content)
-            click.echo(response.get('description'))
-            click.echo(f"\nEnv vars set: {response.get('config').get('env')} \n")
-        except Exception as e:
-            print("\nException({})".format(e.__str__()))
+        response = service.post(file_content)
+        description = response.get('description')
+        if not isinstance(description, dict):
+            raise Exception(f"{description}")
+        click.echo(f"\nHash: {description.get('description')} \n")
+        click.echo(f"\nEnv vars set: {description.get('config').get('env')} \n")
+

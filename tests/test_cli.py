@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import unittest
 
+from about import properties
 from utils.cmd_utils import CmdUtils
 
 
@@ -18,6 +19,7 @@ class FlaskServerTestCase(unittest.TestCase):
                                                f"--file={FlaskServerTestCase.file}.yml")
 
         print(response.get("err"))
+        self.assertIn(f"{properties.get('version')}", response.get('out'))
         self.assertIn("Global exit code: 0", response.get('out'))
 
     def test_cli_exit_status_1(self):
@@ -28,6 +30,7 @@ class FlaskServerTestCase(unittest.TestCase):
                                                f"--file={FlaskServerTestCase.file}_exit_1.yml")
 
         print(response.get("err"))
+        self.assertIn(f"{properties.get('version')}", response.get('out'))
         self.assertIn("Global exit code: 1", response.get('out'))
 
 

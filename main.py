@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import time
 from secrets import token_hex
 
 import click
@@ -24,7 +25,8 @@ from utils.io_utils import IOUtils
 @click.option('--cert', help='The certificate with which the estuary-agent was deployed. E.g. https/cert.pem')
 @click.option('--endpoint', help='The endpoint to sent the request. Default is "/commanddetachedyaml"')
 @click.option('--file', help='The yaml file path on disk. Default is "./config.yaml"')
-def cli(ip, port, token, protocol, cert, endpoint, file):
+@click.option('--interval', help='The poll interval in seconds. Default is 5.')
+def cli(ip, port, token, protocol, cert, endpoint, file, interval):
     print(f"CLI version: {properties.get('version')}\n")
     cmds_id = token_hex(8)
     connection = {
@@ -54,8 +56,10 @@ def cli(ip, port, token, protocol, cert, endpoint, file):
     print(f"Running commands from file '{file_path}'. Waiting for hash confirmation ...\n")
     ConfigSender.send_config(service=service, file_content=file_content)
 
+    poll_interval = interval if interval is not None else 5
+    time.sleep(1)
     status_checker = StatusChecker(service)
-    exit_code = status_checker.check_progress(poll_interval=5)
+    exit_code = status_checker.check_progress(poll_interval=poll_interval)
 
     print(f"Global exit code: {exit_code}\n")
     exit(exit_code)

@@ -15,10 +15,7 @@ class RestApiService:
 
         response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'))
 
-        if response.status_code != 200:
-            return "Error: Http code: {}. Http body: {}".format(response.status_code, response.text)
-
-        return response.json().get('description')
+        return response.json()
 
     def post(self, content):
         content = content.strip()
@@ -30,16 +27,7 @@ class RestApiService:
 
         response = requests.post(url_format, headers=headers, data=content, timeout=5, verify=self.conn.get('cert'))
 
-        # error, server sent non 200 OK description code
-        if response.status_code != 200:
-            return "Error: Http code: {}. Http body: {}".format(response.status_code, response.text)
-
-        try:
-            cmds_id = response.json().get('description')
-        except Exception as e:
-            return "\nError: ({})".format(e.__str__())
-
-        return cmds_id
+        return response.json()
 
     def get(self):
         endpoint = "/commanddetached"
@@ -53,7 +41,7 @@ class RestApiService:
 
         # error, server sent non 200 OK description code
         if response.status_code != 200:
-            return "Error: Http code: {}. Http body: {}".format(response.status_code, response.text)
+            return response.json()
 
         body = response.json()
 
