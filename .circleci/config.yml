@@ -17,8 +17,11 @@ jobs:
           command: pyinstaller --onefile main.py
           name: "generate cli exe with pyinstaller"
       - run:
-          command: $ProgressPreference = "SilentlyContinue"; wget https://estuary-agent.s3.eu-central-1.amazonaws.com/4.0.8/main-win.exe -o main-win.exe
+          command: $ProgressPreference = "SilentlyContinue"; wget https://27-295994997-gh.circle-artifacts.com/0/main-win.exe -o main-win.exe
           name: "download estuary-agent"
+      - run:
+          command: $ProgressPreference = "SilentlyContinue"; wget https://27-295994997-gh.circle-artifacts.com/0/start.py-win -o start.py
+          name: "download start.py"
       - run:
           command: Start-Process .\main-win.exe
           name: "start estuary-agent"
@@ -30,7 +33,7 @@ jobs:
           name: "run integration tests"
       - run:
           command: Copy-Item "dist\main.exe" -Destination "main.exe"
-          name: "copy start.py"
+          name: "copy main.exe"
       - store_artifacts:
           path: main.exe
 workflows:
