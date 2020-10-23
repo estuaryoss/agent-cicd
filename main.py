@@ -7,6 +7,7 @@ import click
 __author__ = "Catalin Dinuta"
 
 from about import properties
+from constants.env_init import EnvInit
 from runners.config_sender import ConfigSender
 from runners.status_checker import StatusChecker
 from service.restapi_service import RestApiService
@@ -27,6 +28,7 @@ from utils.io_utils import IOUtils
 @click.option('--file', help='The yaml file path on disk. Default is "./config.yaml"')
 @click.option('--interval', help='The poll interval in seconds. Default is 5.')
 def cli(ip, port, token, protocol, cert, endpoint, file, interval):
+    IOUtils.create_dir(EnvInit.CMD_DETACHED_STREAMS)
     print(f"CLI version: {properties.get('version')}\n")
     cmds_id = token_hex(8)
     connection = {
@@ -56,7 +58,7 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval):
     print(f"Running commands from file '{file_path}'. Waiting for hash confirmation ...\n")
     ConfigSender.send_config(service=service, file_content=file_content)
 
-    poll_interval = interval if interval is not None else 5
+    poll_interval = int(interval) if interval is not None else 5
     time.sleep(1)
     status_checker = StatusChecker(service)
     exit_code = status_checker.check_progress(poll_interval=poll_interval)
