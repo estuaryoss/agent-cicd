@@ -36,7 +36,7 @@ class StatusChecker:
         if len(self.f_seek[cmd]) == 0:
             self.f_seek[cmd] = [IOUtils.get_fh_for_read(self.cmd_hasher.get_cmd_for_file_encode_str(cmd, ".out")),
                                 IOUtils.get_fh_for_read(self.cmd_hasher.get_cmd_for_file_encode_str(cmd, ".err"))]
-        out, err = self.f_seek[cmd][0].read(), self.f_seek[cmd][1].read()
+        out, err = self.f_seek[cmd][0].read().rstrip(), self.f_seek[cmd][1].read().rstrip()
         self.f_seek[cmd][0].seek(0, os.SEEK_END), self.f_seek[cmd][1].seek(0, os.SEEK_SET)
         if out == "" and err == "":
             return
