@@ -7,3 +7,4 @@ script:
   - apk add curl
 after_script:
   - ls -lart
+  - echo 1 && sleep 5 && echo 2 && sleep 3 && echo 3 && sleep 10 && echo 4
