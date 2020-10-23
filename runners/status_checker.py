@@ -58,9 +58,9 @@ class StatusChecker:
         return self.description.get('finished')
 
     def __get_global_status(self):
-        commands = self.cmds_finished.keys()
+        commands = self.description.get('commands').keys()
         for cmd in commands:
-            if self.cmds_finished.get(cmd) != 0:
+            if self.description.get('commands').get(cmd).get('details').get('code') != 0:
                 return 1
         return 0
 
