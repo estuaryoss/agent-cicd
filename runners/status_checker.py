@@ -11,7 +11,7 @@ class StatusChecker:
         """ Progress checker for commands """
         self.service = service
         self.description = {}
-        self.cmds_finished = {}
+        self.was_cmd_printed = {}
         self.f_seek = {}
         self.cmd_hasher = CommandHasher()
 
@@ -19,17 +19,19 @@ class StatusChecker:
         self.__poll_and_save()
         self.__check_if_scheduled()
         self.__init_f_seek()
+        self.__init_was_cmd_printed()
         while True:
             self.__poll_and_save()
             self.__stream_out_err()
-            if self.__check_finished():
+            if self.__check_finished_global():
                 return self.__get_global_status()
             time.sleep(poll_interval)
 
     def __poll_and_save(self):
         try:
-            self.description = self.service.get()
-        except Exception as e:
+            if isinstance(self.service.get().get('description'), dict):
+                self.description = self.service.get().get('description')
+        except:
             pass
 
     def __print_progress(self, cmd):
@@ -37,10 +39,19 @@ class StatusChecker:
             self.f_seek[cmd] = [IOUtils.get_fh_for_read(self.cmd_hasher.get_cmd_for_file_encode_str(cmd, ".out")),
                                 IOUtils.get_fh_for_read(self.cmd_hasher.get_cmd_for_file_encode_str(cmd, ".err"))]
         out, err = self.f_seek[cmd][0].read().rstrip(), self.f_seek[cmd][1].read().rstrip()
-        self.f_seek[cmd][0].seek(0, os.SEEK_END), self.f_seek[cmd][1].seek(0, os.SEEK_SET)
-        if out == "" and err == "":
-            return
-        print(out if err == "" else err)
+        self.f_seek[cmd][0].seek(0, os.SEEK_END), self.f_seek[cmd][1].seek(0, os.SEEK_END)
+        self.__print_result(err, out)
+        if self.__check_finished_cmd(cmd=cmd) and not self.was_cmd_printed[cmd]:
+            self.was_cmd_printed[cmd] = True
+            print(f"'{cmd}' exit code: {self.__get_cmd_exit_code(cmd=cmd)}\n")
+
+    def __print_result(self, err, out):
+        if err == "" and out == "":
+            pass
+        elif err == "":
+            print(out)
+        else:
+            print(err)
 
     def __stream_out_err(self):
         commands = self.description.get('commands').keys()
@@ -51,11 +62,14 @@ class StatusChecker:
                 IOUtils.write_to_file(out_file, self.description.get('commands').get(cmd).get('details').get('out'))
                 IOUtils.write_to_file(err_file, self.description.get('commands').get(cmd).get('details').get('err'))
                 self.__print_progress(cmd=cmd)
-            except Exception as e:
+            except:
                 continue
 
-    def __check_finished(self):
+    def __check_finished_global(self):
         return self.description.get('finished')
+
+    def __check_finished_cmd(self, cmd):
+        return self.description.get('commands').get(cmd).get('status') == "finished"
 
     def __get_global_status(self):
         commands = self.description.get('commands').keys()
@@ -71,3 +85,9 @@ class StatusChecker:
 
     def __init_f_seek(self):
         self.f_seek = {key: [] for key in self.description.get('commands').keys()}
+
+    def __init_was_cmd_printed(self):
+        self.was_cmd_printed = {key: False for key in self.description.get('commands').keys()}
+
+    def __get_cmd_exit_code(self, cmd):
+        return self.description.get('commands').get(cmd).get('details').get('code')

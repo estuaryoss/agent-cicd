@@ -1,6 +1,5 @@
 env:
-  ISOLATED: "true"
-  MINE: "YOURS"
+  FOO: "BAR"
 before_script:
   - echo before_script
 script:
