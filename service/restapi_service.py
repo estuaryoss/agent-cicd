@@ -10,7 +10,7 @@ class RestApiService:
         url_format = f"{self.conn.get('protocol')}://{self.conn.get('ip')}:{self.conn.get('port')}{endpoint}"
         headers = {
             "Token": self.conn.get('token'),
-            "Content-Type": "text/plain"
+            "Content-Type": "application/json"
         }
 
         response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'))
@@ -22,7 +22,7 @@ class RestApiService:
         url_format = f"{self.conn.get('protocol')}://{self.conn.get('ip')}:{self.conn.get('port')}{self.conn.get('endpoint')}"
         headers = {
             "Token": self.conn.get('token'),
-            "Content-Type": "text/plain"
+            "Content-Type": "application/json"
         }
 
         response = requests.post(url_format, headers=headers, data=content, timeout=5, verify=self.conn.get('cert'))
@@ -34,13 +34,13 @@ class RestApiService:
         url_format = f"{self.conn.get('protocol')}://{self.conn.get('ip')}:{self.conn.get('port')}{endpoint}"
         headers = {
             "Token": self.conn.get('token'),
-            "Content-Type": "text/plain"
+            "Content-Type": "application/json"
         }
 
         response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'))
 
-        # error, server sent non 200 OK description code
-        if response.status_code != 200:
+        # error, server sent non 202 ACCEPTED code
+        if response.status_code != 202:
             return response.json()
 
         body = response.json()
