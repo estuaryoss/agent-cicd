@@ -1,10 +1,14 @@
 env:
   ISOLATED: "true"
   MINE: "YOURS"
+client_script:
+  - -put --args cicd_flow.py;;cicd_flow.py
+  - -get --args /etc/os-release;;os-release.txt
 before_script:
   - cat /etc/os-release
 script:
-  - apk add curl
+  - chmod +x cicd_flow.py
+  - ./cicd_flow.py
 after_script:
   - ls -lart
   - echo 1 && sleep 5 && echo 2 && sleep 3 && echo 3 && sleep 10 && echo 4
