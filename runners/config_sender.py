@@ -1,7 +1,7 @@
 import click
 
 
-class ConfigSender:
+class Sender:
 
     @staticmethod
     def send_config(service, file_content):
@@ -9,6 +9,13 @@ class ConfigSender:
         description = response.get('description')
         if not isinstance(description, dict):
             raise Exception(f"{description}")
-        click.echo(f"\nHash: {description.get('description')} \n")
-        click.echo(f"\nEnv vars set: {description.get('config').get('env')} \n")
+        click.echo(f"\nHash\n{description.get('description')}\n")
+        click.echo(f"\nEnvironment variables\n{description.get('config').get('env')}\n")
 
+    @staticmethod
+    def get_agent_info(service):
+        response = service.about()
+        description = response.get('description')
+        if not isinstance(description, dict):
+            raise Exception(f"{description}")
+        click.echo(f"\nAgent Info\n{description}\n")

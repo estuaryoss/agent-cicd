@@ -5,6 +5,18 @@ class RestApiService:
     def __init__(self, connection):
         self.conn = connection
 
+    def about(self):
+        endpoint = "/about"
+        url_format = f"{self.conn.get('protocol')}://{self.conn.get('ip')}:{self.conn.get('port')}{endpoint}"
+        headers = {
+            "Token": self.conn.get('token'),
+            "Content-Type": "application/json"
+        }
+
+        response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'))
+
+        return response.json()
+
     def ping(self):
         endpoint = "/ping"
         url_format = f"{self.conn.get('protocol')}://{self.conn.get('ip')}:{self.conn.get('port')}{endpoint}"

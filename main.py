@@ -8,7 +8,7 @@ __author__ = "Catalin Dinuta"
 
 from about import properties
 from constants.env_init import EnvInit
-from runners.config_sender import ConfigSender
+from runners.config_sender import Sender
 from runners.status_checker import StatusChecker
 from service.restapi_service import RestApiService
 from utils.io_utils import IOUtils
@@ -56,7 +56,8 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval):
         exit(1)
 
     print(f"Running commands from file '{file_path}'. Waiting for hash confirmation ...\n")
-    ConfigSender.send_config(service=service, file_content=file_content)
+    Sender.send_config(service=service, file_content=file_content)
+    Sender.get_agent_info(service=service)
 
     poll_interval = int(interval) if interval is not None else 5
     time.sleep(1)
