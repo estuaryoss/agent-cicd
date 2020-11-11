@@ -42,8 +42,8 @@ class FlaskServerTestCase(unittest.TestCase):
 
         print(response.get("err"))
         self.assertIn(f"{properties.get('version')}", response.get('out'))
-        self.assertIn("You executed custom CI/CD flow", response.get('out'))
-        self.assertIn("Global exit code:", response.get('out'))  # not interested here
+        self.assertIn("Global exit code: 0", response.get('out'))
+        self.assertNotIn("Error", response.get('out'))
 
 
 if __name__ == '__main__':
