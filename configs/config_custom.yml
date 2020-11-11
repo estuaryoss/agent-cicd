@@ -7,6 +7,6 @@ before_script:
   - cat /etc/os-release
 script:
   - chmod +x cicd_flow.py
-  - python cicd_flow.py
+  - python3 cicd_flow.py
 after_script:
   - echo "finished"
