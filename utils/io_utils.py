@@ -12,10 +12,10 @@ class IOUtils:
             os.makedirs(path, permissions)
 
     @staticmethod
-    def read_file(file):
+    def read_file(file, type='rb'):
         if not Path(file).is_file():
             raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), Path(file))
-        with open(file, 'rb') as f:
+        with open(file, type) as f:
             return f.read()
 
     @staticmethod

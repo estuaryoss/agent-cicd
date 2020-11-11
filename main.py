@@ -6,12 +6,17 @@ import click
 
 __author__ = "Catalin Dinuta"
 
+import yaml
+
 from about import properties
 from constants.env_init import EnvInit
+from model.config_loader import ConfigLoader
 from runners.config_sender import Sender
 from runners.status_checker import StatusChecker
 from service.restapi_service import RestApiService
+from utils.command_holder import CommandHolder
 from utils.io_utils import IOUtils
+from utils.yaml_cmds_splitter import YamlCommandsSplitter
 
 
 @click.command()
@@ -54,6 +59,13 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval):
     except Exception as e:
         print("Could not connect to the agent ({})\n".format(e.__str__()))
         exit(1)
+
+    config_loader = ConfigLoader(yaml.safe_load(IOUtils.read_file(file=file_path, type='r')))
+    yamlSplitter = YamlCommandsSplitter(config_loader.get_config())
+    client_cmds = yamlSplitter.get_cmds_in_order()
+    for cmd in client_cmds:
+        print(f"Running client command: '{cmd}'\n")
+        CommandHolder.run_cmd(service=service, command=cmd)
 
     print(f"Running commands from file '{file_path}'. Waiting for hash confirmation ...\n")
     Sender.send_config(service=service, file_content=file_content)

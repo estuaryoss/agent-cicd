@@ -1,5 +1,7 @@
 import requests
 
+from utils.io_utils import IOUtils
+
 
 class RestApiService:
     def __init__(self, connection):
@@ -62,3 +64,38 @@ class RestApiService:
             raise body.get('description')
 
         return body.get('description')
+
+    def upload_file(self, remote_path, local_path):
+        url_format = f"{self.conn.get('protocol')}://{self.conn.get('ip')}:{self.conn.get('port')}/file"
+        headers = {
+            "Token": self.conn.get('token'),
+            "File-Path": remote_path,
+            "Content-Type": "application/octet-stream"
+        }
+        response = requests.post(url_format, headers=headers, data=IOUtils.read_file(local_path),
+                                 verify=self.conn.get('cert'))
+
+        # error, server sent non 200 OK response code
+        if response.status_code != 200:
+            return "Error: Http code: {}. Http body: {}".format(response.status_code, response.text)
+
+        body = response.json()
+
+        return body.get('description')
+
+    def download_file(self, remote_path, local_path):
+        url_format = f"{self.conn.get('protocol')}://{self.conn.get('ip')}:{self.conn.get('port')}/file"
+        headers = {
+            "Token": self.conn.get('token'),
+            "File-Path": remote_path,
+            "Content-Type": "application/octet-stream"
+        }
+        response = requests.get(url_format, headers=headers, stream=True, verify=self.conn.get('cert'))
+        response.raw.decode_content = True
+
+        # error, server sent non 200 OK response code
+        if response.status_code != 200:
+            return "Error: Http code: {}.".format(response.status_code)
+        IOUtils.write_to_file_binary(local_path, raw_response=response.raw)
+
+        return f"Saved at location {local_path}"

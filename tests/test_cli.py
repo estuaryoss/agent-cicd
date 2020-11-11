@@ -33,6 +33,17 @@ class FlaskServerTestCase(unittest.TestCase):
         self.assertIn(f"{properties.get('version')}", response.get('out'))
         self.assertIn("Global exit code: 1", response.get('out'))
 
+    def test_cli_execute_custom_uploaded_script(self):
+        response = CmdUtils.run_cmd_shell_true(f"python main.py "
+                                               f"--ip={FlaskServerTestCase.ip} "
+                                               f"--port={FlaskServerTestCase.port} "
+                                               f"--token={FlaskServerTestCase.token} "
+                                               f"--file={FlaskServerTestCase.file}_custom.yml")
+
+        print(response.get("err"))
+        self.assertIn(f"{properties.get('version')}", response.get('out'))
+        self.assertIn("You executed custom CI/CD flow", response.get('out'))
+        self.assertIn("Global exit code: 0", response.get('out'))
 
 if __name__ == '__main__':
     unittest.main()
