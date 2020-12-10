@@ -72,7 +72,7 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval):
     Sender.get_agent_info(service=service)
 
     poll_interval = int(interval) if interval is not None else 5
-    time.sleep(1)
+    time.sleep(2)
     status_checker = StatusChecker(service)
     exit_code = status_checker.check_progress(poll_interval=poll_interval)
 
