@@ -28,10 +28,13 @@ class StatusChecker:
             time.sleep(poll_interval)
 
     def __poll_and_save(self):
+        description = self.service.get().get('description')
         try:
-            if isinstance(self.service.get().get('description'), dict):
-                self.description = self.service.get().get('description')
-        except:
+            if isinstance(description, dict):
+                self.description = description
+            else:
+                raise Exception(description)
+        except Exception as e:
             pass
 
     def __print_progress(self, cmd):
@@ -79,7 +82,7 @@ class StatusChecker:
         return 0
 
     def __check_if_scheduled(self):
-        if len(self.description.get('commands')) == 0:
+        if self.description.get('started') is not True and self.description.get('finished') is not True:
             raise Exception("Exception: ({})".format("Error in the agent. The commands are not scheduled. "
                                                      "Check if you have 'start.py' in the path\n"))
 
