@@ -82,9 +82,9 @@ class StatusChecker:
         return 0
 
     def __check_if_scheduled(self):
-        if self.description.get('started') is not True and self.description.get('finished') is not True:
-            raise Exception("Exception: ({})".format("Error in the agent. The commands are not scheduled. "
-                                                     "Check if you have 'start.py' in the path\n"))
+        if len(self.description.get('commands')) == 0:
+            raise BaseException("Error in the agent. The commands are not scheduled. "
+                                "Check if you have 'runcmd' bin in the path\n")
 
     def __init_f_seek(self):
         self.f_seek = {key: [] for key in self.description.get('commands').keys()}

@@ -17,6 +17,9 @@ class RestApiService:
 
         response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'))
 
+        if response.status_code != 200:
+            raise BaseException("Error: Http code: {}. Http body: {}".format(response.status_code, response.text))
+
         return response.json()
 
     def ping(self):
@@ -29,6 +32,9 @@ class RestApiService:
 
         response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'))
 
+        if response.status_code != 200:
+            raise BaseException("Error: Http code: {}. Http body: {}".format(response.status_code, response.text))
+
         return response.json()
 
     def post(self, content):
@@ -40,6 +46,9 @@ class RestApiService:
         }
 
         response = requests.post(url_format, headers=headers, data=content, timeout=5, verify=self.conn.get('cert'))
+
+        if response.status_code != 200:
+            raise BaseException("Error: Http code: {}. Http body: {}".format(response.status_code, response.text))
 
         return response.json()
 
@@ -61,7 +70,7 @@ class RestApiService:
 
         # error, the type should be dict
         if isinstance(body['description'], str):
-            raise body.get('description')
+            raise BaseException(body.get('description'))
 
         return body.get('description')
 
@@ -77,7 +86,7 @@ class RestApiService:
 
         # error, server sent non 200 OK response code
         if response.status_code != 200:
-            return "Error: Http code: {}. Http body: {}".format(response.status_code, response.text)
+            raise BaseException("Error: Http code: {}. Http body: {}".format(response.status_code, response.text))
 
         body = response.json()
 
@@ -95,7 +104,7 @@ class RestApiService:
 
         # error, server sent non 200 OK response code
         if response.status_code != 200:
-            return "Error: Http code: {}.".format(response.status_code)
+            raise BaseException("Error: Http code: {}.".format(response.status_code))
         IOUtils.write_to_file_binary(local_path, raw_response=response.raw)
 
         return f"Saved at location {local_path}"

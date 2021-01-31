@@ -61,11 +61,11 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval):
         exit(1)
 
     config_loader = ConfigLoader(yaml.safe_load(IOUtils.read_file(file=file_path, type='r')))
-    yamlSplitter = YamlCommandsSplitter(config_loader.get_config())
-    client_cmds = yamlSplitter.get_cmds_in_order()
+    yaml_splitter = YamlCommandsSplitter(config_loader.get_config())
+    client_cmds = yaml_splitter.get_cmds_in_order()
     for cmd in client_cmds:
         print(f"Running client command: '{cmd}'\n")
-        CommandHolder.run_cmd(service=service, command=cmd)
+        click.echo(CommandHolder.run_cmd(service=service, command=cmd))
 
     print(f"Running commands from file '{file_path}'. Waiting for hash confirmation ...\n")
     Sender.send_config(service=service, file_content=file_content)

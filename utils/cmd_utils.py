@@ -14,6 +14,15 @@ class CmdUtils:
         return CmdUtils.__get_subprocess_data(p)
 
     @staticmethod
+    def run_cmd_shell_true_get_str(command):
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        response = CmdUtils.__get_subprocess_data(p)
+        if response.get("code") != 0:
+            raise response.get("err")
+
+        return response.get("out")
+
+    @staticmethod
     def run_cmd_shell_false(command):
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return CmdUtils.__get_subprocess_data(p)

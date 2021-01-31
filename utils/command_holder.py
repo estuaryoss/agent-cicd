@@ -1,5 +1,8 @@
 import sys
 
+import click
+
+from utils.cmd_utils import CmdUtils
 from utils.sftp import Sftp
 
 
@@ -21,6 +24,10 @@ class CommandHolder:
             "--method": Sftp.download_file,
             "--args": []
         },
+        "-sys": {
+            "--method": CmdUtils.run_cmd_shell_true_get_str,
+            "--args": []
+        },
     }
 
     @classmethod
@@ -31,7 +38,9 @@ class CommandHolder:
                     map(lambda x: x.strip(), command.partition("--args")[2].split(";;"))) if \
                     command.partition("--args")[2] else [0]
                 cls.commands.get(key)["--args"].insert(0, service) if command.partition("--args")[2] else None
-                print(f"Executed {command}")
+                click.echo(f"Executing {command}")
+                if "-sys" in key:
+                    return cls.commands.get(key).get("--method")(CommandHolder.commands.get(key).get("--args")[-1])
                 return cls.commands.get(key).get("--method")(*CommandHolder.commands.get(key).get("--args"))
 
         return None

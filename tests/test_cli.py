@@ -43,6 +43,8 @@ class FlaskServerTestCase(unittest.TestCase):
         print(response.get("err"))
         self.assertIn(f"{properties.get('version')}", response.get('out'))
         self.assertIn("Global exit code: 0", response.get('out'))
+        self.assertIn("BIOS Version:", response.get('out'))
+        self.assertIn("System Locale:", response.get('out'))
         self.assertNotIn("Error", response.get('out'))
 
 
