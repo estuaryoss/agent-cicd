@@ -1,6 +1,6 @@
 properties = {
     "name": "estuary-cicd",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "description": "Execute your CI/CD flows",
     "author": "Catalin Dinuta",
     "platforms": ["Linux", "Mac", "Windows"],
