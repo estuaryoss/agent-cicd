@@ -67,14 +67,21 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval):
         print(f"Running client command: '{cmd}'\n")
         click.echo(CommandHolder.run_cmd(service=service, command=cmd))
 
-    print(f"Running commands from file '{file_path}'. Waiting for hash confirmation ...\n")
-    Sender.send_config(service=service, file_content=file_content)
+    print(f"Running commands from file '{file_path}'. Waiting for response confirmation ...\n")
+    description = Sender.send_config(service=service, file_content=file_content)
     Sender.get_agent_info(service=service)
 
     poll_interval = int(interval) if interval is not None else 5
     time.sleep(2)
     status_checker = StatusChecker(service)
-    exit_code = status_checker.check_progress(poll_interval=poll_interval)
+    # if default then check progress of the cmd in background
+    if connection.get("endpoint") == f"/commanddetachedyaml/{cmds_id}":
+        exit_code = status_checker.check_progress_async(poll_interval=poll_interval)
+    # otherwise check the command already executed
+    elif connection.get("endpoint") == "/commandyaml":
+        exit_code = status_checker.check_progress_sync(description=description.get("description"))
+    else:
+        raise BaseException(f"Unknown endpoint {endpoint}")
 
     print(f"Global exit code: {exit_code}\n")
     exit(exit_code)

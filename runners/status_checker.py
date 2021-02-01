@@ -15,7 +15,7 @@ class StatusChecker:
         self.f_seek = {}
         self.cmd_hasher = CommandHasher()
 
-    def check_progress(self, poll_interval):
+    def check_progress_async(self, poll_interval):
         self.__poll_and_save()
         self.__check_if_scheduled()
         self.__init_f_seek()
@@ -27,6 +27,17 @@ class StatusChecker:
                 return self.__get_global_status()
             time.sleep(poll_interval)
 
+    def check_progress_sync(self, description):
+        self.__save(description)
+        self.__check_if_scheduled()
+        self.__init_f_seek()
+        self.__init_was_cmd_printed()
+        while True:
+            self.__save(description)
+            self.__stream_out_err()
+            if self.__check_finished_global():
+                return self.__get_global_status()
+
     def __poll_and_save(self):
         description = self.service.get().get('description')
         try:
@@ -36,6 +47,10 @@ class StatusChecker:
                 raise Exception(description)
         except Exception as e:
             pass
+
+    def __save(self, description):
+        if isinstance(description, dict):
+            self.description = description
 
     def __print_progress(self, cmd):
         if len(self.f_seek[cmd]) == 0:
