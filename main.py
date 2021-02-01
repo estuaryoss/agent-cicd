@@ -75,10 +75,10 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval):
     time.sleep(2)
     status_checker = StatusChecker(service)
     # if default then check progress of the cmd in background
-    if endpoint == f"/commanddetachedyaml/{cmds_id}":
+    if connection.get("endpoint") == f"/commanddetachedyaml/{cmds_id}":
         exit_code = status_checker.check_progress_async(poll_interval=poll_interval)
     # otherwise check the command already executed
-    elif endpoint == "/commandyaml":
+    elif connection.get("endpoint") == "/commandyaml":
         exit_code = status_checker.check_progress_sync(description=description.get("description"))
     else:
         raise BaseException(f"Unknown endpoint {endpoint}")
