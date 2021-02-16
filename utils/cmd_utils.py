@@ -18,7 +18,7 @@ class CmdUtils:
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         response = CmdUtils.__get_subprocess_data(p)
         if response.get("code") != 0:
-            raise response.get("err")
+            raise BaseException(response.get("err"))
 
         return response.get("out")
 

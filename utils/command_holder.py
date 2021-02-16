@@ -40,7 +40,7 @@ class CommandHolder:
                 cls.commands.get(key)["--args"].insert(0, service) if command.partition("--args")[2] else None
                 click.echo(f"Executing {command}")
                 if "-sys" in key:
-                    return cls.commands.get(key).get("--method")(CommandHolder.commands.get(key).get("--args")[-1])
+                    return cls.commands.get(key).get("--method")(CommandHolder.commands.get(key).get("--args")[1:])
                 return cls.commands.get(key).get("--method")(*CommandHolder.commands.get(key).get("--args"))
 
         return None
