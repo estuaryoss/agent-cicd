@@ -84,7 +84,6 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval):
         raise BaseException(f"Unknown endpoint {endpoint}")
 
     print(f"Global exit code: {exit_code}\n")
-    exit(exit_code)
 
 
 if __name__ == "__main__":
