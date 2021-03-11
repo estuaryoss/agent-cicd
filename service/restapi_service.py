@@ -47,7 +47,7 @@ class RestApiService:
 
         response = requests.post(url_format, headers=headers, data=content, timeout=5, verify=self.conn.get('cert'))
 
-        if response.status_code != 200:
+        if response.status_code != 202:
             raise BaseException("Error: Http code: {}. Http body: {}".format(response.status_code, response.text))
 
         return response.json()
