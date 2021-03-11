@@ -17,7 +17,7 @@ jobs:
           command: pyinstaller --onefile main.py
           name: "generate cli exe with pyinstaller"
       - run:
-          command: $ProgressPreference = "SilentlyContinue"; wget https://github.com/estuaryoss/estuary-agent-go/releases/download/4.2.0/estuary-agent-go.exe
+          command: $ProgressPreference = "SilentlyContinue"; wget https://github.com/estuaryoss/estuary-agent-go/releases/download/4.2.0/estuary-agent-go.exe -O estuary-agent-go.exe
           name: "download estuary-agent"
       - run:
           command: $ProgressPreference = "SilentlyContinue"; wget https://github.com/estuaryoss/runcmd/releases/download/1.0.0/runcmd.exe -O runcmd.exe
