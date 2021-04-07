@@ -1,0 +1,12 @@
+env:
+  FOO: "BAR"
+client_script:
+  - -sys --args systeminfo
+before_script:
+  - echo "before_script"
+script:
+  - echo "script"
+  - invalid
+  - echo "after invalid command"
+after_script:
+  - echo "after_script"

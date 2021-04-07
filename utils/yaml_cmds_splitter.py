@@ -10,7 +10,7 @@ class YamlCommandsSplitter:
         commands_list_in_order = []
         for section in self.__in_order_fields_client:
             if self.config.get(section) is not None:
-                commands_list_in_order = [cmd for cmd in self.config.get(section)]
+                [commands_list_in_order.append(cmd) for cmd in self.config.get(section)]
 
         return commands_list_in_order
 
@@ -18,6 +18,6 @@ class YamlCommandsSplitter:
         commands_list_in_order = []
         for section in self.__in_order_fields_server:
             if self.config.get(section) is not None:
-                commands_list_in_order = [cmd for cmd in self.config.get(section)]
+                [commands_list_in_order.append(cmd) for cmd in self.config.get(section)]
 
         return commands_list_in_order

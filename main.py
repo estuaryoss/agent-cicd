@@ -65,7 +65,8 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval, batch):
     try:
         service.ping()
     except Exception as e:
-        raise BaseException(f"Could not connect to the agent {ip}:{port}. Error: {e.__str__()}")
+        raise BaseException(f"Could not connect to the agent "
+                            f"{connection.get('protocol')}://{connection.get('ip')}:{connection.get('port')}. Error: {e.__str__()}")
 
     config_loader = ConfigLoader(yaml.safe_load(IOUtils.read_file(file=file_path, type='r')))
     yaml_splitter = YamlCommandsSplitter(config_loader.get_config())
@@ -83,7 +84,8 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval, batch):
 
     Sender.get_agent_info(service=service)
 
-    print(f"Running commands from file '{file_path}' on agent {ip}:{port}. Waiting for response confirmation ...\n")
+    print(f"Running commands from file '{file_path}' on agent "
+          f"{connection.get('protocol')}://{connection.get('ip')}:{connection.get('port')} on endpoint {connection.get('endpoint')}\n")
     status_checker = StatusChecker(service)
 
     if batch_option:

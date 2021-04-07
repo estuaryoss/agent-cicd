@@ -69,6 +69,21 @@ class FlaskServerTestCase(unittest.TestCase):
         self.assertIn("is not recognized", response.get('out'))
         self.assertNotIn("Global exit code: 0", response.get('out'))
 
+    def test_cli_execute_cli_exits_on_first_server_error(self):
+        response = CmdUtils.run_cmd_shell_true(f"{self.exec} {self.main_path} "
+                                               f"--ip={self.ip} "
+                                               f"--port={self.port} "
+                                               f"--token=\"{self.token}\" "
+                                               f"--batch=false "
+                                               f"--file={self.file}_custom_exit_on_first_fail_server.yml")
+
+        print(f"{response}")
+        self.assertIn(f"{properties.get('version')}", response.get('out'))
+        self.assertIn("BIOS Version:", response.get('out'))
+        self.assertIn("System Locale:", response.get('out'))
+        self.assertNotIn("after invalid command", response.get('out'))
+        self.assertNotIn("Global exit code: 0", response.get('out'))
+
 
 if __name__ == '__main__':
     unittest.main()
