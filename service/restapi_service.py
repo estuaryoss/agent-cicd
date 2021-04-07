@@ -92,7 +92,11 @@ class RestApiService:
 
         body = response.json()
 
-        return body.get('description')
+        return {
+            "code": 0,
+            "out": f"Upload {body.get('description')} from {local_path} to {remote_path}",
+            "err": ""
+        }
 
     def download_file(self, remote_path, local_path):
         url_format = f"{self.conn.get('protocol')}://{self.conn.get('ip')}:{self.conn.get('port')}/file"
@@ -109,4 +113,8 @@ class RestApiService:
             raise BaseException("Error: Http code: {}.".format(response.status_code))
         IOUtils.write_to_file_binary(local_path, raw_response=response.raw)
 
-        return f"Saved at location {local_path}"
+        return {
+            "code": 0,
+            "out": f"Saved at location {local_path}",
+            "err": ""
+        }

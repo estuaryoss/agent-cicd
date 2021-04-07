@@ -70,12 +70,12 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval, batch):
     server_cmds = yaml_splitter.get_server_cmds_in_order()
     for cmd in client_cmds:
         print(f"Running client command: '{cmd}'\n")
-        response = CommandHolder.run_cmd(service=service, command=cmd)
-        if response.get("code") != 0:
-            click.echo(CommandHolder.run_cmd(service=service, command=cmd).get('err'))
-            sys.exit(response.get("code"))
+        result = CommandHolder.run_cmd(service=service, command=cmd)
+        if result.get("code") != 0:
+            click.echo(result.get('err'))
+            sys.exit(result.get("code"))
 
-        click.echo(CommandHolder.run_cmd(service=service, command=cmd).get('out'))
+        click.echo(result.get('out'))
 
     print(f"Running commands from file '{file_path}'. Waiting for response confirmation ...\n")
     description = Sender.send_config(service=service, file_content=file_content)

@@ -1,0 +1,11 @@
+env:
+  FOO: "BAR"
+client_script:
+  - -sys --args systeminfo
+  - -sys --args whateverinvalid
+before_script:
+  - echo "before_script"
+script:
+  - echo "script"
+after_script:
+  - echo "after_script"
