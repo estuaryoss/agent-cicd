@@ -93,7 +93,7 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval, batch):
     else:
         raise BaseException(f"Unknown endpoint {endpoint}")
 
-    click.echo(f"Global exit code: {exit_code}\n")
+    print(f"Global exit code: {exit_code}\n")
 
 
 if __name__ == "__main__":
