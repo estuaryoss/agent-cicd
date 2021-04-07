@@ -3,3 +3,5 @@ click
 requests
 pyinstaller
 setuptools==44.0.0
+jproperties
+pytest

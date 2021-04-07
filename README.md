@@ -35,18 +35,29 @@ Usage: main.py [OPTIONS]
 Options:
   --ip TEXT        The IP/hostname of the target machine where estuary-agent
                    is deployed
+
   --port TEXT      The port number of the target machine where estuary-agent
                    is deployed
+
   --token TEXT     The authentication token that will be sent via 'Token'
                    header. Use 'None' if estuary-agent is deployed unsecured
+
   --protocol TEXT  The protocol with which the estuary-agent was deployed.
                    Default is http. E.g. https
+
   --cert TEXT      The certificate with which the estuary-agent was deployed.
                    E.g. https/cert.pem
+
   --endpoint TEXT  The endpoint to sent the request. Default is
                    "/commanddetachedyaml"
+
   --file TEXT      The yaml file path on disk. Default is "./config.yaml"
   --interval TEXT  The poll interval in seconds. Default is 5.
+  --batch TEXT     If batch is "true" the server will execute all commands in
+                   batch. If batch is "false" the commands will be executed one
+                   by one and the CLI exits when the first failure is
+                   detected on the Agent. Default is "false"
+
   --help           Show this message and exit.
 
 ```

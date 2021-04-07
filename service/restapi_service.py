@@ -1,3 +1,5 @@
+import re
+
 import requests
 
 from utils.io_utils import IOUtils
@@ -47,7 +49,7 @@ class RestApiService:
 
         response = requests.post(url_format, headers=headers, data=content, timeout=5, verify=self.conn.get('cert'))
 
-        if response.status_code != 202:
+        if not re.search('^20\d$', str(response.status_code)):
             raise BaseException("Error: Http code: {}. Http body: {}".format(response.status_code, response.text))
 
         return response.json()
@@ -62,8 +64,8 @@ class RestApiService:
 
         response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'))
 
-        # error, server sent non 202 ACCEPTED code
-        if response.status_code != 202:
+        # error, server sent non 20x code
+        if not re.search('^20\d$', str(response.status_code)):
             return response.json()
 
         body = response.json()
@@ -72,7 +74,7 @@ class RestApiService:
         if isinstance(body['description'], str):
             raise BaseException(body.get('description'))
 
-        return body.get('description')
+        return body
 
     def upload_file(self, remote_path, local_path):
         url_format = f"{self.conn.get('protocol')}://{self.conn.get('ip')}:{self.conn.get('port')}/file"
@@ -90,7 +92,11 @@ class RestApiService:
 
         body = response.json()
 
-        return body.get('description')
+        return {
+            "code": 0,
+            "out": f"Upload {body.get('description')} from {local_path} to {remote_path}",
+            "err": ""
+        }
 
     def download_file(self, remote_path, local_path):
         url_format = f"{self.conn.get('protocol')}://{self.conn.get('ip')}:{self.conn.get('port')}/file"
@@ -107,4 +113,8 @@ class RestApiService:
             raise BaseException("Error: Http code: {}.".format(response.status_code))
         IOUtils.write_to_file_binary(local_path, raw_response=response.raw)
 
-        return f"Saved at location {local_path}"
+        return {
+            "code": 0,
+            "out": f"Saved at location {local_path}",
+            "err": ""
+        }

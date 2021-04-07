@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+import sys
 import time
+from distutils.util import strtobool
 from secrets import token_hex
 
 import click
@@ -32,7 +34,11 @@ from utils.yaml_cmds_splitter import YamlCommandsSplitter
 @click.option('--endpoint', help='The endpoint to sent the request. Default is "/commanddetachedyaml"')
 @click.option('--file', help='The yaml file path on disk. Default is "./config.yaml"')
 @click.option('--interval', help='The poll interval in seconds. Default is 5.')
-def cli(ip, port, token, protocol, cert, endpoint, file, interval):
+@click.option('--batch',
+              help='If batch is "true", the server will execute all commands in batch. '
+                   'If batch is "false" the commands will be executed one by one and the CLI exits '
+                   'when the first failure is detected. Default is "false"')
+def cli(ip, port, token, protocol, cert, endpoint, file, interval, batch):
     IOUtils.create_dir(EnvInit.CMD_DETACHED_STREAMS)
     print(f"CLI version: {properties.get('version')}\n")
     cmds_id = token_hex(8)
@@ -44,45 +50,71 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval):
         "cert": cert if cert is not None else "https/cert.pem",
         "endpoint": endpoint if endpoint is not None else f"/commanddetachedyaml/{cmds_id}"
     }
+
     service = RestApiService(connection)
     file_path = file if file is not None else "config.yaml"
+    batch_option = bool(strtobool(batch)) if batch is not None else False
+    poll_interval = int(interval) if interval is not None else 5
 
     try:
         file_content = IOUtils.read_file(file_path)
     except Exception as e:
-        print("File does not exist ({})\n".format(e.__str__()))
-        exit(1)
+        raise BaseException("File does not exist ({})\n".format(e.__str__()))
 
     # check if can connect
     try:
         service.ping()
     except Exception as e:
-        print("Could not connect to the agent ({})\n".format(e.__str__()))
-        exit(1)
+        raise BaseException(f"Could not connect to the agent "
+                            f"{connection.get('protocol')}://{connection.get('ip')}:{connection.get('port')}. Error: {e.__str__()}")
 
     config_loader = ConfigLoader(yaml.safe_load(IOUtils.read_file(file=file_path, type='r')))
     yaml_splitter = YamlCommandsSplitter(config_loader.get_config())
-    client_cmds = yaml_splitter.get_cmds_in_order()
+    client_cmds = yaml_splitter.get_client_cmds_in_order()
+    server_cmds = yaml_splitter.get_server_cmds_in_order()
+
     for cmd in client_cmds:
         print(f"Running client command: '{cmd}'\n")
-        click.echo(CommandHolder.run_cmd(service=service, command=cmd))
+        result = CommandHolder.run_cmd(service=service, command=cmd)
+        if result.get("code") != 0:
+            click.echo(result.get('err'))
+            sys.exit(result.get("code"))
 
-    print(f"Running commands from file '{file_path}'. Waiting for response confirmation ...\n")
-    description = Sender.send_config(service=service, file_content=file_content)
+        click.echo(result.get('out'))
+
     Sender.get_agent_info(service=service)
 
-    poll_interval = int(interval) if interval is not None else 5
-    time.sleep(2)
+    print(f"Running commands from file '{file_path}' on agent "
+          f"{connection.get('protocol')}://{connection.get('ip')}:{connection.get('port')} on endpoint {connection.get('endpoint')}\n")
     status_checker = StatusChecker(service)
-    # if default then check progress of the cmd in background
-    if connection.get("endpoint") == f"/commanddetachedyaml/{cmds_id}":
-        exit_code = status_checker.check_progress_async(poll_interval=poll_interval)
-    # otherwise check the command already executed
-    elif connection.get("endpoint") == "/commandyaml":
-        exit_code = status_checker.check_progress_sync(description=description.get("description"))
-    else:
-        raise BaseException(f"Unknown endpoint {endpoint}")
 
+    if batch_option:
+        description = Sender.send_config(service=service, file_content=file_content)
+
+        time.sleep(2)
+        # if default then check progress of the cmd in background
+        if connection.get("endpoint") == f"/commanddetachedyaml/{cmds_id}":
+            exit_code = status_checker.check_progress_async(poll_interval=poll_interval)
+        # otherwise check the command already executed
+        elif connection.get("endpoint") == "/commandyaml":
+            exit_code = status_checker.check_progress_sync(description=description.get("description"))
+        else:
+            raise BaseException(f"Unknown endpoint {endpoint}")
+    else:
+        for cmd in server_cmds:
+            description = Sender.send_config_for_cmd(service=service, cmd=cmd)
+
+            time.sleep(2)
+            # if default then check progress of the cmd in background
+            if connection.get("endpoint") == f"/commanddetachedyaml/{cmds_id}":
+                exit_code = status_checker.check_progress_async(poll_interval=poll_interval)
+            # otherwise check the command already executed
+            elif connection.get("endpoint") == "/commandyaml":
+                exit_code = status_checker.check_progress_sync(description=description.get("description"))
+            else:
+                raise BaseException(f"Unknown endpoint {endpoint}")
+            if exit_code != 0:
+                sys.exit(exit_code)
     print(f"Global exit code: {exit_code}\n")
 
 
