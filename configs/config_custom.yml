@@ -2,7 +2,7 @@ env:
   FOO: "BAR"
 client_script:
   - -sys --args systeminfo
-  - -sys --args echo;;sunt pe client
+  - -sys --args echo;;"I am on client"
   - -put --args cicd_flow.py;;cicd_flow.py
 #  - -get --args /etc/os-release;;os-release.txt
 before_script:

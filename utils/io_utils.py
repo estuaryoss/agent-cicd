@@ -33,3 +33,33 @@ class IOUtils:
     def write_to_file(file, content=""):
         with open(file, 'w') as f:
             f.write(content)
+
+    @staticmethod
+    def delete_file(file):
+        file_path = Path(file)
+        if file_path.is_file():
+            try:
+                file_path.unlink()
+            except Exception as e:
+                print(f"Failed to delete file {file}: {e.__str__()}")
+
+    @staticmethod
+    def delete_files(files):
+        for file in files:
+            IOUtils.delete_file(file)
+
+    @staticmethod
+    def create_files(files):
+        for file in files:
+            IOUtils.create_file(file)
+
+    @staticmethod
+    def create_file(file):
+        file = Path(file)
+        file.touch() if not file.exists() else None
+
+    @staticmethod
+    def recreate_files(files):
+        for file in files:
+            IOUtils.delete_file(file)
+            IOUtils.create_file(file)

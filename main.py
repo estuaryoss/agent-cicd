@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 import time
 from secrets import token_hex
 
@@ -32,7 +33,11 @@ from utils.yaml_cmds_splitter import YamlCommandsSplitter
 @click.option('--endpoint', help='The endpoint to sent the request. Default is "/commanddetachedyaml"')
 @click.option('--file', help='The yaml file path on disk. Default is "./config.yaml"')
 @click.option('--interval', help='The poll interval in seconds. Default is 5.')
-def cli(ip, port, token, protocol, cert, endpoint, file, interval):
+@click.option('--batch',
+              help='If batch is "true", the server will execute everything and the user has no control.'
+                   '. If batch is "false" the commands will be executed one by one and the CLI exits '
+                   'when the first failure is encountered. Default is "false"')
+def cli(ip, port, token, protocol, cert, endpoint, file, interval, batch):
     IOUtils.create_dir(EnvInit.CMD_DETACHED_STREAMS)
     print(f"CLI version: {properties.get('version')}\n")
     cmds_id = token_hex(8)
@@ -46,26 +51,31 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval):
     }
     service = RestApiService(connection)
     file_path = file if file is not None else "config.yaml"
+    batch_option = batch if batch is not None else False
 
     try:
         file_content = IOUtils.read_file(file_path)
     except Exception as e:
-        print("File does not exist ({})\n".format(e.__str__()))
-        exit(1)
+        raise BaseException("File does not exist ({})\n".format(e.__str__()))
 
     # check if can connect
     try:
         service.ping()
     except Exception as e:
-        print("Could not connect to the agent ({})\n".format(e.__str__()))
-        exit(1)
+        raise BaseException("Could not connect to the agent ({})\n".format(e.__str__()))
 
     config_loader = ConfigLoader(yaml.safe_load(IOUtils.read_file(file=file_path, type='r')))
     yaml_splitter = YamlCommandsSplitter(config_loader.get_config())
-    client_cmds = yaml_splitter.get_cmds_in_order()
+    client_cmds = yaml_splitter.get_client_cmds_in_order()
+    server_cmds = yaml_splitter.get_server_cmds_in_order()
     for cmd in client_cmds:
         print(f"Running client command: '{cmd}'\n")
-        click.echo(CommandHolder.run_cmd(service=service, command=cmd))
+        response = CommandHolder.run_cmd(service=service, command=cmd)
+        if response.get("code") != 0:
+            click.echo(CommandHolder.run_cmd(service=service, command=cmd).get('err'))
+            sys.exit(response.get("code"))
+
+        click.echo(CommandHolder.run_cmd(service=service, command=cmd).get('out'))
 
     print(f"Running commands from file '{file_path}'. Waiting for response confirmation ...\n")
     description = Sender.send_config(service=service, file_content=file_content)
@@ -83,7 +93,7 @@ def cli(ip, port, token, protocol, cert, endpoint, file, interval):
     else:
         raise BaseException(f"Unknown endpoint {endpoint}")
 
-    print(f"Global exit code: {exit_code}\n")
+    click.echo(f"Global exit code: {exit_code}\n")
 
 
 if __name__ == "__main__":
