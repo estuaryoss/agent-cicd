@@ -33,6 +33,7 @@ class FlaskServerTestCase(unittest.TestCase):
                                                f"--port={self.port} "
                                                f"--username=\"{self.username}\" "
                                                f"--password=\"{self.password}\" "
+                                               f"--batch={self.batch} "
                                                f"--file={self.file}_exit_1.yml")
 
         print(response)
