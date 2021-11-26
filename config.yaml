@@ -2,13 +2,11 @@ env:
   ISOLATED: "true"
   MINE: "YOURS"
 client_script:
-  - -put --args cicd_flow.py;;cicd_flow.py
-  - -get --args /etc/os-release;;os-release.txt
+  - -put --args README.md;;README_1.md
+  - -get --args README.md;;README_1.md
 before_script:
-  - cat /etc/os-release
+  - echo before_script
 script:
-  - chmod +x cicd_flow.py
-  - ./cicd_flow.py
+  - echo script
 after_script:
-  - ls -lart
-  - echo 1 && sleep 5 && echo 2 && sleep 3 && echo 3 && sleep 10 && echo 4
+  - echo after_script

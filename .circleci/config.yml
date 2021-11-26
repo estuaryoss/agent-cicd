@@ -15,18 +15,15 @@ jobs:
           name: "install requirements"
       - run:
           command: pyinstaller --onefile main.py
-          name: "generate cli exe with pyinstaller"
+          name: "generate cli exe with py_installer"
       - run:
-          command: $ProgressPreference = "SilentlyContinue"; wget https://github.com/estuaryoss/estuary-agent-go/releases/download/4.2.0/estuary-agent-go.exe -O estuary-agent-go.exe
-          name: "download estuary-agent"
+          command: $ProgressPreference = "SilentlyContinue"; wget https://s01.oss.sonatype.org/content/repositories/snapshots/com/github/estuaryoss/agent/4.2.4-SNAPSHOT/agent-4.2.4-20211124.145200-3-exec.jar -o agent-exec.jar
+          name: "download Agent"
       - run:
-          command: $ProgressPreference = "SilentlyContinue"; wget https://github.com/estuaryoss/runcmd/releases/download/1.0.0/runcmd.exe -O runcmd.exe
-          name: "download runcmd"
+          command: Start-Process -FilePath java -ArgumentList @("-jar agent-exec.jar")
+          name: "start Agent"
       - run:
-          command: Start-Process .\estuary-agent-go.exe
-          name: "start estuary-agent"
-      - run:
-          command: ping -n 5 127.0.0.1
+          command: ping -n 20 127.0.0.1
           name: "wait some time"
       - run:
           command: python -m unittest discover tests "test_cli.py"
