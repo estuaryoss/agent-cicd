@@ -10,14 +10,13 @@ class Sender:
         description = response.get('description')
         if not isinstance(description, dict):
             raise Exception(f"{description}")
-        # click.echo(f"\nEnvironment variables:\n{description.get('config').get('env')}\n")
+        click.echo(f"\nEnvironment variables:\n{description.get('config').get('env')}\n")
 
         return description
 
     @staticmethod
     def get_agent_info(service):
-        response = service.about()
-        description = response.get('description')
+        description = service.about()
         if not isinstance(description, dict):
             raise Exception(f"{description}")
         click.echo(f"\nAgent Info\n{description}\n")

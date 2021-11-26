@@ -1,6 +1,7 @@
 import re
 
 import requests
+from requests.auth import HTTPBasicAuth
 
 from utils.io_utils import IOUtils
 
@@ -17,7 +18,8 @@ class RestApiService:
             "Content-Type": "application/json"
         }
 
-        response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'))
+        response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'),
+                                auth=HTTPBasicAuth(self.conn.get('username'), self.conn.get('password')))
 
         if response.status_code != 200:
             raise BaseException("Error: Http code: {}. Http body: {}".format(response.status_code, response.text))
@@ -32,7 +34,8 @@ class RestApiService:
             "Content-Type": "application/json"
         }
 
-        response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'))
+        response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'),
+                                auth=HTTPBasicAuth(self.conn.get('username'), self.conn.get('password')))
 
         if response.status_code != 200:
             raise BaseException("Error: Http code: {}. Http body: {}".format(response.status_code, response.text))
@@ -47,7 +50,8 @@ class RestApiService:
             "Content-Type": "application/json"
         }
 
-        response = requests.post(url_format, headers=headers, data=content, timeout=5, verify=self.conn.get('cert'))
+        response = requests.post(url_format, headers=headers, data=content, timeout=5, verify=self.conn.get('cert'),
+                                 auth=HTTPBasicAuth(self.conn.get('username'), self.conn.get('password')))
 
         if not re.search('^20\d$', str(response.status_code)):
             raise BaseException("Error: Http code: {}. Http body: {}".format(response.status_code, response.text))
@@ -62,7 +66,8 @@ class RestApiService:
             "Content-Type": "application/json"
         }
 
-        response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'))
+        response = requests.get(url_format, headers=headers, timeout=5, verify=self.conn.get('cert'),
+                                auth=HTTPBasicAuth(self.conn.get('username'), self.conn.get('password')))
 
         # error, server sent non 20x code
         if not re.search('^20\d$', str(response.status_code)):
@@ -84,7 +89,8 @@ class RestApiService:
             "Content-Type": "application/octet-stream"
         }
         response = requests.post(url_format, headers=headers, data=IOUtils.read_file(local_path),
-                                 verify=self.conn.get('cert'))
+                                 verify=self.conn.get('cert'),
+                                 auth=HTTPBasicAuth(self.conn.get('username'), self.conn.get('password')))
 
         # error, server sent non 200 OK response code
         if response.status_code != 200:
@@ -105,7 +111,8 @@ class RestApiService:
             "File-Path": remote_path,
             "Content-Type": "application/octet-stream"
         }
-        response = requests.get(url_format, headers=headers, stream=True, verify=self.conn.get('cert'))
+        response = requests.get(url_format, headers=headers, stream=True, verify=self.conn.get('cert'),
+                                auth=HTTPBasicAuth(self.conn.get('username'), self.conn.get('password')))
         response.raw.decode_content = True
 
         # error, server sent non 200 OK response code

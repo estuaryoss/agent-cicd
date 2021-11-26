@@ -8,7 +8,8 @@ from utils.cmd_utils import CmdUtils
 class FlaskServerTestCase(unittest.TestCase):
     ip = "localhost"
     port = "8080"
-    token = ""
+    username = "admin"
+    password = "estuaryoss123!"
     batch = "true"
     file = "configs/config"
     exec = "python"
@@ -18,8 +19,8 @@ class FlaskServerTestCase(unittest.TestCase):
         response = CmdUtils.run_cmd_shell_true(f"{self.exec} {self.main_path} "
                                                f"--ip={self.ip} "
                                                f"--port={self.port} "
-                                               f"--token=\"{self.token}\" "
-                                               f"--batch={self.batch} "
+                                               f"--username=\"{self.username}\" "
+                                               f"--password=\"{self.password}\" "
                                                f"--file={self.file}.yml")
 
         print(response)
@@ -30,8 +31,8 @@ class FlaskServerTestCase(unittest.TestCase):
         response = CmdUtils.run_cmd_shell_true(f"{self.exec} {self.main_path} "
                                                f"--ip={self.ip} "
                                                f"--port={self.port} "
-                                               f"--token=\"{self.token}\" "
-                                               f"--batch={self.batch} "
+                                               f"--username=\"{self.username}\" "
+                                               f"--password=\"{self.password}\" "
                                                f"--file={self.file}_exit_1.yml")
 
         print(response)
@@ -42,8 +43,8 @@ class FlaskServerTestCase(unittest.TestCase):
         response = CmdUtils.run_cmd_shell_true(f"{self.exec} {self.main_path} "
                                                f"--ip={self.ip} "
                                                f"--port={self.port} "
-                                               f"--token=\"{self.token}\" "
-                                               f"--batch={self.batch} "
+                                               f"--username=\"{self.username}\" "
+                                               f"--password=\"{self.password}\" "
                                                f"--file={self.file}_custom.yml")
 
         print(f"{response}")
@@ -58,8 +59,8 @@ class FlaskServerTestCase(unittest.TestCase):
         response = CmdUtils.run_cmd_shell_true(f"{self.exec} {self.main_path} "
                                                f"--ip={self.ip} "
                                                f"--port={self.port} "
-                                               f"--token=\"{self.token}\" "
-                                               f"--batch={self.batch} "
+                                               f"--username=\"{self.username}\" "
+                                               f"--password=\"{self.password}\" "
                                                f"--file={self.file}_custom_exit_on_first_fail_client.yml")
 
         print(f"{response}")
@@ -73,8 +74,8 @@ class FlaskServerTestCase(unittest.TestCase):
         response = CmdUtils.run_cmd_shell_true(f"{self.exec} {self.main_path} "
                                                f"--ip={self.ip} "
                                                f"--port={self.port} "
-                                               f"--token=\"{self.token}\" "
-                                               f"--batch=false "
+                                               f"--username=\"{self.username}\" "
+                                               f"--password=\"{self.password}\" "
                                                f"--file={self.file}_custom_exit_on_first_fail_server.yml")
 
         print(f"{response}")
